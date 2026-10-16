@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Local Audio & Media Files (DO NOT COMMIT PERSONAL OR COPYRIGHTED MUSIC)
+music/
+tracks/
+media/
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.ogg
+*.aac
+
+# OpenDeck Cache (Pre-baked stems & Whisper lyrics)
+.opendeck-cache/
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
+
+# Test Outputs & Screenshots
+test-*.png
+*.log

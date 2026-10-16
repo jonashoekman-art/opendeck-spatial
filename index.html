@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<!--
+  @file index.html
+  @author Jonas Hoekman
+  @project OpenDeck Spatial Sing & Mix <remote pending>
+  @license MIT
+-->
+<html lang="nl" data-font="atkinson">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="OpenDeck Spatial Sing & Mix - Accessible Pro DJ & Karaoke Audio Controller">
+  <title>OpenDeck Spatial Sing & Mix</title>
+  <link rel="stylesheet" href="/src/index.css">
+  <style>
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body data-layout="desktop">
+
+  <!-- Screen Reader Live Announcements Region (WCAG AAA) -->
+  <div id="aria-live-polite" aria-live="polite" class="sr-only"></div>
+
+  <!-- Confetti Canvas Overlay (Spacebar Big Party Drop) -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Top Bar: Accessibility & System Mode Bar -->
+  <header class="top-bar" role="banner">
+    <div class="brand-title">
+      <span aria-hidden="true">🎛️</span>
+      <h1 id="app-title" style="font-size: 1.15rem; display: inline;">OpenDeck Spatial Sing & Mix</h1>
+    </div>
+
+    <div class="controls-group" role="toolbar" aria-label="Toegankelijkheid en systeeminstellingen">
+      <button id="btn-load-demo" class="btn-secondary" title="Laad ingebouwde testmuziek">
+        <span aria-hidden="true">🎵</span> Demo
+      </button>
+      <button id="btn-open-folder" class="btn-secondary" title="Kies een lokale map met liedjes">
+        <span aria-hidden="true">📁</span> <span id="label-open-folder">Muziekmap</span>
+      </button>
+      <input type="file" id="input-folder-picker" webkitdirectory directory multiple style="display:none" aria-hidden="true">
+      <button id="btn-toggle-drawer" class="btn-secondary" title="Open liedjeslijst">
+        <span aria-hidden="true">📚</span> <span id="label-drawer-btn">Liedjes</span>
+      </button>
+      <button id="btn-toggle-mode" class="btn-kids-toggle" aria-label="Schakel tussen Pro DJ en Feestmodus">
+        Feestmodus 🎈
+      </button>
+      <button id="btn-toggle-lang" class="btn-secondary" aria-label="Taal wisselen">
+        🇳🇱 NL
+      </button>
+      <button id="btn-toggle-font" class="btn-secondary" aria-label="Lettertype wisselen voor leesbaarheid">
+        🔤 Atkinson
+      </button>
+      <button id="btn-toggle-layout" class="btn-secondary" aria-label="Layout wisselen tussen Desktop en Pi Touch">
+        🖥️ Desktop
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide-Over Music Library Drawer -->
+  <aside id="music-drawer" class="music-drawer hidden" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div class="drawer-header">
+      <h2 id="drawer-title">📚 Lokale Muziekbibliotheek</h2>
+      <button id="btn-close-drawer" class="btn-secondary" aria-label="Sluit bibliotheek">✕</button>
+    </div>
+    <div class="drawer-content">
+      <div id="drawer-track-list" class="track-list">
+        <p class="empty-state">Kies eerst een map met de <strong>📁 Muziekmap</strong> knop of sleep bestanden naar de decks.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 60fps Parallel Dual Waveform Canvas Section -->
+  <section class="waveform-container" aria-label="60fps Parallelle Golfvorm Weergave">
+    <canvas id="waveform-canvas"></canvas>
+  </section>
+
+  <!-- Main DJ Stage Layout -->
+  <main class="stage-grid" id="main-stage">
+
+    <!-- DECK A (BLUE) -->
+    <article class="deck-card deck-a" id="deck-card-a" aria-label="Deck A Bediening">
+      <header class="deck-header">
+        <span class="deck-title-badge">DECK A (BLAUW)</span>
+        <span class="deck-bpm" id="bpm-a">124.0 BPM</span>
+      </header>
+
+      <!-- Transport: Play & Cue -->
+      <div class="transport-row">
+        <button id="btn-play-a" class="btn-transport btn-play" aria-label="Deck A Start of Pauze">
+          ▶️ <span>START</span> <span class="keycap-badge">[S]</span>
+        </button>
+        <button id="btn-cue-a" class="btn-transport btn-cue" aria-label="Deck A Cue Terugloop">
+          ⏮️ <span>CUE</span> <span class="keycap-badge">[A]</span>
+        </button>
+      </div>
+
+      <!-- Real-Time Vocal Reducer Slider -->
+      <div class="control-block">
+        <div class="control-label">
+          <label for="slider-vocal-a" id="label-vocal-a">🎤 Zanger Zachter / Meezingen</label>
+          <span class="keycap-badge" id="badge-vocal-a">[V: Mute/100%]</span>
+        </div>
+        <input type="range" id="slider-vocal-a" class="range-slider" min="0" max="1" step="0.01" value="1" aria-valuemin="0" aria-valuemax="1" aria-valuenow="1">
+      </div>
+
+      <!-- Bipolar Sound Filter Slider (LPF <-> HPF) -->
+      <div class="control-block">
+        <div class="control-label">
+          <label for="slider-filter-a" id="label-filter-a">🌊 Onderwater / Ruimte Geluid</label>
+          <span class="keycap-badge">[Z/X/C]</span>
+        </div>
+        <input type="range" id="slider-filter-a" class="range-slider" min="-1" max="1" step="0.02" value="0" aria-label="Bipolair Filter Deck A">
+      </div>
+
+      <!-- Performance Pads (Hot Cues / Stems / Sampler) -->
+      <div class="pads-grid" role="group" aria-label="Deck A Performance Pads">
+        <button class="pad-btn" id="pad-a-0" aria-label="Pad 1 Drum">
+          <span>🥁 Drum</span>
+          <span class="keycap-badge">[1] / [Q]</span>
+        </button>
+        <button class="pad-btn" id="pad-a-1" aria-label="Pad 2 Bas">
+          <span>🎸 Bas</span>
+          <span class="keycap-badge">[2] / [W]</span>
+        </button>
+        <button class="pad-btn" id="pad-a-2" aria-label="Pad 3 Melodie">
+          <span>🎹 Mel</span>
+          <span class="keycap-badge">[3] / [E]</span>
+        </button>
+        <button class="pad-btn" id="pad-a-3" aria-label="Pad 4 Zang">
+          <span>🎤 Zang</span>
+          <span class="keycap-badge">[4] / [R]</span>
+        </button>
+      </div>
+    </article>
+
+    <!-- CENTER MIXER SECTION -->
+    <section class="mixer-card" aria-label="Midden Mixer en Crossfader">
+      <div class="mixer-header">OPENDECK MIXER</div>
+
+      <!-- Big Party Button (Spacebar Trigger) -->
+      <button id="btn-party" class="btn-party" aria-label="Grote Feestknop voor Confetti en Drop">
+        <span>🎉 GROTE FEESTKNOP!</span>
+        <span class="keycap-badge">[SPACEBAR]</span>
+      </button>
+
+      <!-- 45mm Virtual Dual-Rail Crossfader -->
+      <div class="crossfader-container">
+        <div class="control-label">
+          <label for="crossfader">Schuif A &lt;===&gt; B</label>
+          <span class="keycap-badge">[Pijltjestoetsen]</span>
+        </div>
+        <input type="range" id="crossfader" class="crossfader-slider" min="-1" max="1" step="0.01" value="0" aria-label="Crossfader tussen Deck A en B">
+      </div>
+    </section>
+
+    <!-- DECK B (GOLD) -->
+    <article class="deck-card deck-b" id="deck-card-b" aria-label="Deck B Bediening">
+      <header class="deck-header">
+        <span class="deck-title-badge">DECK B (GOUD)</span>
+        <span class="deck-bpm" id="bpm-b">128.0 BPM</span>
+      </header>
+
+      <!-- Transport: Play & Cue -->
+      <div class="transport-row">
+        <button id="btn-play-b" class="btn-transport btn-play" aria-label="Deck B Start of Pauze">
+          ▶️ <span>START</span> <span class="keycap-badge">[K]</span>
+        </button>
+        <button id="btn-cue-b" class="btn-transport btn-cue" aria-label="Deck B Cue Terugloop">
+          ⏮️ <span>CUE</span> <span class="keycap-badge">[J]</span>
+        </button>
+      </div>
+
+      <!-- Real-Time Vocal Reducer Slider -->
+      <div class="control-block">
+        <div class="control-label">
+          <label for="slider-vocal-b" id="label-vocal-b">🎤 Zanger Zachter / Meezingen</label>
+          <span class="keycap-badge" id="badge-vocal-b">[/: Mute/100%]</span>
+        </div>
+        <input type="range" id="slider-vocal-b" class="range-slider" min="0" max="1" step="0.01" value="1" aria-valuemin="0" aria-valuemax="1" aria-valuenow="1">
+      </div>
+
+      <!-- Bipolar Sound Filter Slider (LPF <-> HPF) -->
+      <div class="control-block">
+        <div class="control-label">
+          <label for="slider-filter-b" id="label-filter-b">🌊 Onderwater / Ruimte Geluid</label>
+          <span class="keycap-badge">[M/,/.]</span>
+        </div>
+        <input type="range" id="slider-filter-b" class="range-slider" min="-1" max="1" step="0.02" value="0" aria-label="Bipolair Filter Deck B">
+      </div>
+
+      <!-- Performance Pads (Hot Cues / Stems / Sampler) -->
+      <div class="pads-grid" role="group" aria-label="Deck B Performance Pads">
+        <button class="pad-btn" id="pad-b-0" aria-label="Pad 1 Drum">
+          <span>🥁 Drum</span>
+          <span class="keycap-badge">[7] / [U]</span>
+        </button>
+        <button class="pad-btn" id="pad-b-1" aria-label="Pad 2 Bas">
+          <span>🎸 Bas</span>
+          <span class="keycap-badge">[8] / [I]</span>
+        </button>
+        <button class="pad-btn" id="pad-b-2" aria-label="Pad 3 Melodie">
+          <span>🎹 Mel</span>
+          <span class="keycap-badge">[9] / [O]</span>
+        </button>
+        <button class="pad-btn" id="pad-b-3" aria-label="Pad 4 Zang">
+          <span>🎤 Zang</span>
+          <span class="keycap-badge">[0] / [P]</span>
+        </button>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Application Logic Bootstrap -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

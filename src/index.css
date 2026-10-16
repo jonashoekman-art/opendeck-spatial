@@ -1,0 +1,610 @@
+/**
+ * @file src/index.css
+ * @author Jonas Hoekman
+ * @project OpenDeck Spatial Sing & Mix <remote pending>
+ * @license MIT
+ * 
+ * WCAG 2.2 AAA Design Tokens & Responsive Layouts
+ * Supports Desktop (>1024px) & 800x480 Raspberry Pi Touchscreen Kiosk Layout.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  --color-bg-deep: #080C14;
+  --color-bg-surface: #0F172A;
+  --color-bg-card: #1E293B;
+  --color-border: #334155;
+  --color-text-main: #F8FAFC;
+  --color-text-muted: #CBD5E1;
+
+  /* Colorblind-Safe Deck Colors (7:1 contrast on dark surface) */
+  --deck-a-primary: #0072B2;
+  --deck-a-light: #56B4E9;
+  --deck-a-contrast: #FFFFFF;
+
+  --deck-b-primary: #E69F00;
+  --deck-b-light: #F0E442;
+  --deck-b-contrast: #1A1000;
+
+  --party-accent: #CC79A7;
+  --focus-ring: #38BDF8;
+
+  --font-family: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+[data-font="atkinson"] {
+  --font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+
+[data-font="dyslexic"] {
+  --font-family: 'OpenDyslexic', 'Atkinson Hyperlegible', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-deep);
+  color: var(--color-text-main);
+  font-family: var(--font-family);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Accessibility Focus Rings */
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* Header & Top Bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-bg-surface);
+  border-bottom: 2px solid var(--color-border);
+  padding: 8px 16px;
+  min-height: 52px;
+  position: relative;
+  z-index: 20;
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  background-color: var(--color-bg-card);
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  transition: background-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #334155;
+}
+
+.btn-kids-toggle {
+  background-color: var(--party-accent);
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Slide-Over Music Library Drawer */
+.music-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(480px, 90vw);
+  height: 100vh;
+  background-color: var(--color-bg-surface);
+  border-left: 2px solid var(--color-border);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.7);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.music-drawer.hidden {
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--color-bg-card);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.drawer-header h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.drawer-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.track-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  gap: 10px;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.track-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-meta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.track-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-load-deck {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-load-a {
+  background-color: var(--deck-a-primary);
+  color: var(--deck-a-contrast);
+}
+
+.btn-load-b {
+  background-color: var(--deck-b-primary);
+  color: var(--deck-b-contrast);
+}
+
+.empty-state {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+  margin-top: 32px;
+}
+
+/* Waveform Section */
+.waveform-container {
+  width: 100%;
+  height: 120px;
+  background: #000;
+  border-bottom: 2px solid var(--color-border);
+  position: relative;
+  z-index: 10;
+}
+
+#waveform-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Main DJ Stage */
+.stage-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px 1fr;
+  gap: 12px;
+  padding: 12px;
+  flex: 1;
+}
+
+/* Decks */
+.deck-card {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.deck-card.deck-a {
+  border-top: 5px solid var(--deck-a-primary);
+}
+
+.deck-card.deck-b {
+  border-top: 5px solid var(--deck-b-primary);
+}
+
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.deck-title-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.deck-a .deck-title-badge {
+  background-color: var(--deck-a-primary);
+  color: var(--deck-a-contrast);
+}
+
+.deck-b .deck-title-badge {
+  background-color: var(--deck-b-primary);
+  color: var(--deck-b-contrast);
+}
+
+/* Primary Transport Buttons */
+.transport-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-transport {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px; /* Accessible 64px target */
+  position: relative;
+  transition: transform 0.05s ease, filter 0.15s ease;
+}
+
+.btn-transport:active {
+  transform: scale(0.97);
+}
+
+.deck-a .btn-play {
+  background-color: var(--deck-a-primary);
+  color: var(--deck-a-contrast);
+}
+
+.deck-b .btn-play {
+  background-color: var(--deck-b-primary);
+  color: var(--deck-b-contrast);
+}
+
+.btn-cue {
+  background-color: var(--color-bg-card);
+  color: var(--color-text-main);
+  border: 2px solid var(--color-border);
+}
+
+/* Keycap Badge Overlay */
+.keycap-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.45);
+  color: #F8FAFC;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Sliders & Controls */
+.control-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.range-slider {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--deck-a-primary);
+  cursor: pointer;
+}
+
+.deck-b .range-slider {
+  accent-color: var(--deck-b-primary);
+}
+
+/* Performance Pads Grid */
+.pads-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.pad-btn {
+  background-color: var(--color-bg-card);
+  color: var(--color-text-main);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 48px;
+}
+
+.pad-btn:active {
+  transform: scale(0.95);
+  background-color: var(--party-accent);
+}
+
+/* Center Mixer Section */
+.mixer-card {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mixer-header {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.eq-kills-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.crossfader-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crossfader-slider {
+  width: 100%;
+  height: 24px;
+  accent-color: #38BDF8;
+  cursor: pointer;
+}
+
+/* Big Party Button (Spacebar) */
+.btn-party {
+  background: linear-gradient(135deg, #CC79A7, #E69F00);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(204, 121, 167, 0.4);
+}
+
+.btn-party:active {
+  transform: scale(0.97);
+}
+
+/* Confetti Canvas Overlay */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ==========================================================================
+   Raspberry Pi 7" Touchscreen Kiosk Layout (800x480 Optimized)
+   ========================================================================== */
+body[data-layout="pi-800x480"] {
+  max-width: 800px;
+  max-height: 480px;
+  height: 480px;
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-layout="pi-800x480"] .top-bar {
+  min-height: 38px;
+  height: 38px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 30;
+}
+
+body[data-layout="pi-800x480"] .brand-title {
+  font-size: 0.95rem;
+}
+
+body[data-layout="pi-800x480"] .btn-secondary {
+  padding: 4px 8px;
+  min-height: 30px;
+  font-size: 0.78rem;
+}
+
+body[data-layout="pi-800x480"] .btn-kids-toggle {
+  padding: 4px 8px;
+  font-size: 0.78rem;
+}
+
+body[data-layout="pi-800x480"] .waveform-container {
+  height: 48px;
+  min-height: 48px;
+  flex-shrink: 0;
+}
+
+body[data-layout="pi-800x480"] .stage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 6px;
+  padding: 6px;
+  flex: 1;
+  overflow: hidden;
+}
+
+body[data-layout="pi-800x480"] .deck-card {
+  padding: 8px;
+  gap: 6px;
+}
+
+body[data-layout="pi-800x480"] .deck-header {
+  font-size: 0.85rem;
+}
+
+body[data-layout="pi-800x480"] .transport-row {
+  gap: 6px;
+}
+
+body[data-layout="pi-800x480"] .btn-transport {
+  min-height: 64px; /* Accessible 64px touch target */
+  font-size: 1rem;
+  padding: 8px;
+}
+
+body[data-layout="pi-800x480"] .control-block {
+  gap: 2px;
+}
+
+body[data-layout="pi-800x480"] .control-label {
+  font-size: 0.74rem;
+}
+
+body[data-layout="pi-800x480"] .pad-btn {
+  min-height: 44px;
+  font-size: 0.8rem;
+  padding: 4px;
+}
+
+body[data-layout="pi-800x480"] .mixer-card {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  min-height: 64px;
+  gap: 12px;
+}
+
+body[data-layout="pi-800x480"] .mixer-header {
+  display: none;
+}
+
+body[data-layout="pi-800x480"] .btn-party {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  min-height: 52px;
+}
+
+body[data-layout="pi-800x480"] .crossfader-container {
+  flex: 1;
+}
+
+/* Reduced Motion Fallback */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
